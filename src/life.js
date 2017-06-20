@@ -3,10 +3,16 @@ const startButton = document.querySelector('button#startButton');
 const stopButton = document.querySelector('button#stopButton');
 const clearButton = document.querySelector('button#clearButton');
 const status = document.querySelector('span#status');
+const generation = document.querySelector('span#generation');
 
 let cells = [];
+
+let generationNumber = 0;
+
+let running = false;
+
 const rows = 20;
-const columns = 30;
+const columns = 35;
 
 function createCells() {
   for (let i = 0; i < rows; i++) {
@@ -50,7 +56,6 @@ function countNeighbors(cell) {
   ]
   tests.forEach(test => {
     if (cells[y + test[0]] && cells[y + test[0]][x + test[1]] && cells[y + test[0]][x + test[1]].classList.contains('alive')) {
-      console.log({ test, cell: cells[y + test[0]][x + test[1]] });
       count++;
     }
   });
@@ -62,6 +67,7 @@ function cellClickHandler(e) {
 }
 
 function updateCells() {
+  let activeCount = 0;
   let newCells = [];
   cells.forEach(row => {
     let newRow = [];
@@ -71,10 +77,13 @@ function updateCells() {
       if (newCell.classList.contains('alive')) {
         if (aliveNeighbors < 2 || aliveNeighbors > 3) {
           newCell.classList.remove('alive');
+        } else {
+          activeCount++;
         }
       } else {
         if (aliveNeighbors === 3) {
           newCell.classList.add('alive');
+          activeCount++;
         }
       }
       newCell.addEventListener('click', cellClickHandler);
@@ -84,6 +93,11 @@ function updateCells() {
   });
   cells = newCells;
   renderCells(cells);
+  generationNumber++;
+  generation.textContent = generationNumber;
+  if (activeCount === 0) {
+    stopInterval();
+  }
 }
 
 createCells();
@@ -92,19 +106,37 @@ function setStatusMessage(text, color) {
   status.textContent = text;
   status.style.color = color;
 }
-startButton.addEventListener('click', () => {
-  setStatusMessage('RUNNING', '#40d541');
-  window.interval = setInterval(() => {
-    updateCells();
-  }, 1000 / 4);
-});
-stopButton.addEventListener('click', () => {
+startButton.addEventListener('click', startInterval);
+
+function startInterval() {
+  if (!running) {
+    running = true;
+    board.classList.add('active');
+    setStatusMessage('RUNNING', '#40d541');
+    window.interval = setInterval(() => {
+      updateCells();
+    }, 1000 / 4);
+  }
+}
+
+stopButton.addEventListener('click', stopInterval);
+
+function stopInterval() {
+  running = false;
+  board.classList.remove('active');
   setStatusMessage('STOPPED', 'red');
   clearInterval(window.interval);
-});
-clearButton.addEventListener('click', () => {
+}
+
+clearButton.addEventListener('click', clearButtonClick);
+
+function clearButtonClick() {
+  running = false;
+  board.classList.remove('active');
   setStatusMessage('STOPPED', 'red');
+  generationNumber = 0;
+  generation.textContent = generationNumber;
   clearInterval(window.interval);
   cells = [];
   createCells();
-});
+}
