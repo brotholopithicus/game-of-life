@@ -1,0 +1,92 @@
+@import url( 'https://fonts.googleapis.com/css?family=Share+Tech+Mono');
+
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #212121;
+}
+
+button {
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+
+  .controls {
+    padding: 2rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    .generations,
+    .status {
+      color: #fff;
+      font-family: 'Share Tech Mono';
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      margin-right: 5rem;
+    }
+
+    .generations {
+      #generation {
+        margin-left: 1rem;
+        color: blue;
+      }
+    }
+
+    .status {
+      #status {
+        margin-left: 1rem;
+        color: red;
+      }
+    }
+  }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(35, 2rem);
+    grid-template-rows: repeat(20, 2rem);
+
+    .cell {
+      border: 1px solid #212121;
+      cursor: pointer;
+      background-color: #2a2a2a;
+
+      &.alive {
+        background-color: #ff6b00;
+      }
+    }
+
+    &:not(.active) {
+      .cell {
+        &:not(.alive) {
+          &:hover {
+            background-color: #393939;
+          }
+        }
+      }
+    }
+
+    &.active {
+      .cell {
+        cursor: default;
+
+        &:hover {
+          background-color: none;
+        }
+      }
+    }
+  }
+}
